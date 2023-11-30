@@ -9,6 +9,8 @@ import com.example.aeontz.data.SharedPreferenceDataStore
 import com.example.aeontz.domain.model.UserRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -19,12 +21,22 @@ class LoginViewModel @Inject constructor(
     private val apiRepositoryImpl: ApiRepositoryImpl,
     private val sharedPreferenceDataStore: SharedPreferenceDataStore
 ): ViewModel() {
+
+    private val _tokenCheck = MutableStateFlow<Boolean?>(null)
+    var tokenCheck = _tokenCheck.asStateFlow()
+
+    init {
+        _tokenCheck.value = sharedPreferenceDataStore.contains()
+    }
+
     fun userAuthorization(userRequest: UserRequest){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val token = apiRepositoryImpl.userAuth(Constants.appKey, Constants.v, userRequest)
+                val tokenResponse = apiRepositoryImpl.userAuth(Constants.appKey, Constants.v, userRequest)
+
                 withContext(Dispatchers.Main){
-                    sharedPreferenceDataStore.putString("USER_TOKEN", token.response?.token)
+                    sharedPreferenceDataStore.putString(tokenResponse.response?.token)
+                    _tokenCheck.value = sharedPreferenceDataStore.contains()
                 }
             }catch (e: Exception){
                 e.localizedMessage?.let { Log.d("checkException", it) }
@@ -33,12 +45,8 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-    fun isUserHasToken(): Boolean{
-        if(sharedPreferenceDataStore.getString("USER_TOKEN", "Default")?.isNotBlank() == true){
-            if(sharedPreferenceDataStore.getString("USER_TOKEN", "Default")?.isNotEmpty() == true){
-                return true
-            }
-        }
-        return false
+
+    fun changeTokenValue(newValue: Boolean){
+        _tokenCheck.value = newValue
     }
 }

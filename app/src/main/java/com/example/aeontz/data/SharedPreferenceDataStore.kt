@@ -14,20 +14,34 @@ class SharedPreferenceDataStore @Inject constructor(
     private var sharedPreferences: SharedPreferences
     private var editor: SharedPreferences.Editor
 
+    companion object{
+        private const val TOKEN_KEY = "USER_TOKEN"
+    }
+
     init {
         sharedPreferences = context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
     }
 
-    fun putString(key: String, value: String?){
-        editor.putString(key,value).apply()
+    fun putString(value: String?){
+        editor.putString(TOKEN_KEY,value).commit()
     }
 
-    fun getString(key: String, value: String): String? {
-        return sharedPreferences.getString(key, null)
+   /* fun getToken(): String? {
+        return sharedPreferences.getString(TOKEN_KEY, null)
+        //return sharedPreferences.getString(TOKEN_KEY, null)
+    }*/
+
+    fun getToken(): String?{
+        return sharedPreferences.getString(TOKEN_KEY, null)
     }
 
-    fun clear(key: String){
-        sharedPreferences.edit().remove(key).apply()
+    fun contains(): Boolean {
+        return sharedPreferences.contains(TOKEN_KEY)
+    }
+
+    fun clear(){
+        //sharedPreferences.edit().remove(TOKEN_KEY).apply()
+        sharedPreferences.edit().clear().apply()
     }
 }

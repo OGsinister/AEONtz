@@ -7,14 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.aeontz.Constants
 import com.example.aeontz.R
 import com.example.aeontz.databinding.FragmentLoginBinding
 import com.example.aeontz.domain.model.UserRequest
 import com.example.aeontz.presentation.showErrorToastMessage
+import kotlinx.coroutines.launch
 
-class LoginFragment() : Fragment() {
+class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private val loginViewModel: LoginViewModel by activityViewModels()
@@ -25,15 +29,18 @@ class LoginFragment() : Fragment() {
     ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        checkUserAuth()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+                loginViewModel.tokenCheck
+                    .collect{
+                        if(it == true){
+                            findNavController().navigate(R.id.action_LoginFragment_to_PaymentsFragment)
+                        }
+                    }
+            }
+        }
 
         return binding.root
-    }
-
-    private fun checkUserAuth() {
-        if(loginViewModel.isUserHasToken()){
-            findNavController().navigate(R.id.action_LoginFragment_to_PaymentsFragment)
-        }
     }
 
     @SuppressLint("ResourceType")
@@ -50,7 +57,7 @@ class LoginFragment() : Fragment() {
                                 password = binding.passwordEditText.text.toString()
                             )
                         )
-                        findNavController().navigate(R.id.action_LoginFragment_to_PaymentsFragment)
+                        //findNavController().navigate(R.id.action_LoginFragment_to_PaymentsFragment)
                     }else {
                         showErrorToastMessage(requireActivity().baseContext, "Неверные данные")
                     }
