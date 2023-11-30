@@ -44,7 +44,6 @@ class LoginFragment() : Fragment() {
             buttonLogin.setOnClickListener{
                 if(isFieldEmpty(LoginEditText.text.toString(), passwordEditText.text.toString())){
                     if(isFieldsCorrect(LoginEditText.text.toString(), passwordEditText.text.toString())){
-
                         loginViewModel.userAuthorization(
                             userRequest = UserRequest(
                                 login = binding.LoginEditText.text.toString(),

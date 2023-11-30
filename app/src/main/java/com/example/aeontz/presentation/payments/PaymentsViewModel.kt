@@ -1,6 +1,8 @@
 package com.example.aeontz.presentation.payments
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.aeontz.Constants
 import com.example.aeontz.domain.Resources
 import com.example.aeontz.data.SharedPreferenceDataStore
@@ -9,6 +11,8 @@ import com.example.aeontz.domain.model.Payment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.io.IOException
 import javax.inject.Inject
 
@@ -21,9 +25,10 @@ class PaymentsViewModel @Inject constructor(
     private var userToken: String? = null
     fun getPayments(): Flow<Resources<Payment>> = flow {
         try{
-            getToken().collect{
+            getToken().onEach{
                 userToken = it
-            }
+            }.launchIn(viewModelScope).join()
+
             emit(Resources.Loading())
             val payments = apiRepository.getPaymentsAuth(
                 appKey = Constants.appKey,
@@ -43,7 +48,7 @@ class PaymentsViewModel @Inject constructor(
                 emit(it)
             }
         }catch (e: Exception){
-            emit(e.localizedMessage)
+            Log.d("token", e.localizedMessage)
         }
     }
     fun clearToken(){

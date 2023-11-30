@@ -10,6 +10,7 @@ import com.example.aeontz.domain.model.UserRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
@@ -22,7 +23,9 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val token = apiRepositoryImpl.userAuth(Constants.appKey, Constants.v, userRequest)
-                sharedPreferenceDataStore.putString("USER_TOKEN", token.response?.token)
+                withContext(Dispatchers.Main){
+                    sharedPreferenceDataStore.putString("USER_TOKEN", token.response?.token)
+                }
             }catch (e: Exception){
                 e.localizedMessage?.let { Log.d("checkException", it) }
             }catch (e: IOException){
