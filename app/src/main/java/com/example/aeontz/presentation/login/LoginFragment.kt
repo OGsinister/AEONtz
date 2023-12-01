@@ -57,7 +57,6 @@ class LoginFragment : Fragment() {
                                 password = binding.passwordEditText.text.toString()
                             )
                         )
-                        //findNavController().navigate(R.id.action_LoginFragment_to_PaymentsFragment)
                     }else {
                         showErrorToastMessage(requireActivity().baseContext, "Неверные данные")
                     }

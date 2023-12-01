@@ -84,7 +84,6 @@ class PaymentsFragment : Fragment() {
     private fun logout() {
         paymentsViewModel.clearToken()
         loginViewModel.changeTokenValue(false)
-        //findNavController().navigate(R.id.action_PaymentsFragment_to_LoginFragment)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

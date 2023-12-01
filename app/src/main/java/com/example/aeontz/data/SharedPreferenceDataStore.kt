@@ -26,22 +26,13 @@ class SharedPreferenceDataStore @Inject constructor(
     fun putString(value: String?){
         editor.putString(TOKEN_KEY,value).commit()
     }
-
-   /* fun getToken(): String? {
-        return sharedPreferences.getString(TOKEN_KEY, null)
-        //return sharedPreferences.getString(TOKEN_KEY, null)
-    }*/
-
     fun getToken(): String?{
         return sharedPreferences.getString(TOKEN_KEY, null)
     }
-
     fun contains(): Boolean {
         return sharedPreferences.contains(TOKEN_KEY)
     }
-
     fun clear(){
-        //sharedPreferences.edit().remove(TOKEN_KEY).apply()
         sharedPreferences.edit().clear().apply()
     }
 }

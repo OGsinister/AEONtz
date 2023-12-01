@@ -24,11 +24,9 @@ class LoginViewModel @Inject constructor(
 
     private val _tokenCheck = MutableStateFlow<Boolean?>(null)
     var tokenCheck = _tokenCheck.asStateFlow()
-
     init {
         _tokenCheck.value = sharedPreferenceDataStore.contains()
     }
-
     fun userAuthorization(userRequest: UserRequest){
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -45,7 +43,6 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
     fun changeTokenValue(newValue: Boolean){
         _tokenCheck.value = newValue
     }
